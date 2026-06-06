@@ -49,7 +49,7 @@ import {
 
 const server = new McpServer({
   name: 'easy-redis-mcp',
-  version: '1.0.0',
+  version: '1.0.1',
   description: `Redis Server: ${getConnectionLabel()}`,
 });
 

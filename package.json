@@ -1,6 +1,6 @@
 {
   "name": "easy-redis-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "High performance Redis MCP Server using node-redis",
   "main": "build/index.js",
   "type": "module",
