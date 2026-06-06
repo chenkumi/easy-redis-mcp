@@ -1,0 +1,50 @@
+{
+  "name": "easy-redis-mcp",
+  "version": "1.0.0",
+  "description": "High performance Redis MCP Server using node-redis",
+  "main": "build/index.js",
+  "type": "module",
+  "bin": {
+    "easy-redis-mcp": "build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "README.zh-TW.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "redis",
+    "node-redis",
+    "redis-cluster",
+    "claude"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "start": "node build/index.js",
+    "dev": "tsc --watch",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "redis": "^5.10.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chenkumi/easy-redis-mcp.git"
+  }
+}
