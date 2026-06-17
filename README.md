@@ -4,8 +4,6 @@ A lightweight [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) s
 
 This project uses Node.js, TypeScript, the official MCP SDK, and the official `redis` Node.js client. It communicates over stdio and supports standalone Redis, Redis Cluster, TLS, and read-only operation.
 
-繁體中文說明請參閱 [README.zh-TW.md](README.zh-TW.md).
-
 ## Features
 
 - Typed tools for strings, hashes, lists, sets, sorted sets, streams, and server information
@@ -17,7 +15,7 @@ This project uses Node.js, TypeScript, the official MCP SDK, and the official `r
 
 ## Requirements
 
-- Node.js 18 or newer
+- Node.js 20 or newer
 - npm
 - A reachable Redis server or Redis Cluster
 
@@ -74,9 +72,9 @@ npx -y easy-redis-mcp
 
 The server normally runs through an MCP client. Starting it directly opens a stdio transport and does not provide an HTTP endpoint.
 
-## Claude Desktop Example
+If you are unsure how a tool should be used, or a Redis command fails, call `redis_manual` first. It returns the built-in manual with safe usage rules, key-type guidance, and command composition notes.
 
-Add the server to the Claude Desktop MCP configuration:
+## Claude Desktop Example
 
 ```json
 {
@@ -139,58 +137,12 @@ REDIS_MODEL = "readwrite"
 }
 ```
 
-## TLS Example
-
-```json
-{
-  "mcpServers": {
-    "easy-redis-mcp": {
-      "command": "npx",
-      "args": ["-y", "easy-redis-mcp"],
-      "env": {
-        "REDIS_HOST": "redis.example.com",
-        "REDIS_PORT": "6380",
-        "REDIS_USERNAME": "app_user",
-        "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_SSL": "true",
-        "REDIS_SSL_CA_PATH": "/path/to/ca.pem",
-        "REDIS_SSL_CERT_REQS": "required"
-      }
-    }
-  }
-}
-```
-
-Set `REDIS_SSL_KEYFILE` and `REDIS_SSL_CERTFILE` as well when the Redis server requires mutual TLS. Avoid `REDIS_SSL_CERT_REQS=none` outside controlled development environments.
-
-## Redis Cluster Example
-
-```json
-{
-  "mcpServers": {
-    "easy-redis-mcp": {
-      "command": "npx",
-      "args": ["-y", "easy-redis-mcp"],
-      "env": {
-        "REDIS_HOST": "redis-cluster.example.com",
-        "REDIS_PORT": "6379",
-        "REDIS_USERNAME": "default",
-        "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_CLUSTER_MODE": "true"
-      }
-    }
-  }
-}
-```
-
-`REDIS_HOST` and `REDIS_PORT` identify the initial cluster root node. `REDIS_DB` is not used for cluster connections because Redis Cluster supports database `0` only.
-
 ## Available Tools
-
-### Read and Inspection Tools
 
 | Tool | Description |
 | --- | --- |
+| `redis_manual` | Return the built-in manual. Use this first when you are unsure how to use Redis tools or need help diagnosing an operation error |
+| `redis_command` | Execute a Redis command with arguments |
 | `redis_ping` | Ping Redis and optionally echo a message |
 | `redis_info` | Return server information, optionally for one section |
 | `redis_dbsize` | Return the number of keys in the selected database |
@@ -206,37 +158,17 @@ Set `REDIS_SSL_KEYFILE` and `REDIS_SSL_CERTFILE` as well when the Redis server r
 | `redis_smembers` | Read all set members |
 | `redis_zrange` | Read a sorted set range, optionally with scores |
 | `redis_xrange` | Read stream entries by ID range |
+| `redis_set`, `redis_mset` | Set one or more string values, only registered in readwrite mode |
+| `redis_del`, `redis_unlink` | Delete one or more keys, only registered in readwrite mode |
+| `redis_expire`, `redis_rename`, `redis_incrby` | Modify key metadata or integer values, only registered in readwrite mode |
+| `redis_hset`, `redis_hdel` | Modify hash fields, only registered in readwrite mode |
+| `redis_lpush`, `redis_rpush`, `redis_lpop`, `redis_rpop` | Modify lists, only registered in readwrite mode |
+| `redis_sadd`, `redis_srem` | Modify sets, only registered in readwrite mode |
+| `redis_zadd`, `redis_zrem` | Modify sorted sets, only registered in readwrite mode |
+| `redis_xadd` | Append a stream entry, only registered in readwrite mode |
+| `redis_publish` | Publish a message to a channel, only registered in readwrite mode |
 
 Prefer `redis_scan` over `redis_keys` for large or production databases because `KEYS` can block Redis while scanning the entire keyspace.
-
-### Write Tools
-
-These tools are registered only when `REDIS_MODEL=readwrite`:
-
-| Tool | Description |
-| --- | --- |
-| `redis_set`, `redis_mset` | Set one or more string values |
-| `redis_del`, `redis_unlink` | Delete one or more keys |
-| `redis_expire`, `redis_rename`, `redis_incrby` | Modify key metadata or integer values |
-| `redis_hset`, `redis_hdel` | Modify hash fields |
-| `redis_lpush`, `redis_rpush`, `redis_lpop`, `redis_rpop` | Modify lists |
-| `redis_sadd`, `redis_srem` | Modify sets |
-| `redis_zadd`, `redis_zrem` | Modify sorted sets |
-| `redis_xadd` | Append a stream entry |
-| `redis_publish` | Publish a message to a channel |
-
-### Generic Command Tool
-
-`redis_command` provides access to Redis commands that do not have dedicated tools:
-
-```json
-{
-  "command": "GET",
-  "args": ["my-key"]
-}
-```
-
-Blocking commands such as `BLPOP`, `SUBSCRIBE`, and `XREAD ... BLOCK` are rejected because they are not suitable for a request/response MCP tool.
 
 When `REDIS_MODEL=read`, `redis_command` permits only commands classified as read-only. Write, administrative, blocking, and unknown commands are rejected.
 
@@ -282,21 +214,6 @@ npm test
 ```
 
 The integration tests require a reachable Redis instance configured through the Redis environment variables.
-
-## Project Structure
-
-```text
-src/
-  commandPolicy.ts Redis command classification and read-only enforcement
-  config.ts        Environment-driven connection and permission settings
-  format.ts        MCP response formatting
-  index.ts         MCP server and tool registration
-  redisClient.ts   Standalone, cluster, authentication, and TLS connections
-  toolHandlers.ts  Redis tool implementations
-test/
-  commandPolicy.test.mjs    Command policy tests
-  redisIntegration.test.mjs Redis integration tests
-```
 
 ## License
 

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
@@ -53,11 +55,24 @@ const server = new McpServer({
   description: `Redis Server: ${getConnectionLabel()}`,
 });
 
+const manualText = readFileSync(fileURLToPath(new URL('../MANUAL.md', import.meta.url)), 'utf8');
+
 const redisArgSchema = z.union([z.string(), z.number(), z.boolean()]);
 const redisArgsSchema = z.array(redisArgSchema);
 const jsonResponse = (value: unknown) => ({
   content: [{ type: 'text' as const, text: jsonText(value) }],
 });
+
+server.registerTool(
+  'redis_manual',
+  {
+    description: 'Return the Redis MCP manual. Use this first when you are unsure how to use redis_command, typed Redis tools, or when an operation fails and you need the safe usage rules, key-type rules, or command composition guidance.',
+    inputSchema: z.object({}),
+  },
+  async () => ({
+    content: [{ type: 'text', text: manualText }],
+  })
+);
 
 server.registerTool(
   'redis_command',

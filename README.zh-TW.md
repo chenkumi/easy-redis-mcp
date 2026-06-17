@@ -17,7 +17,7 @@ English documentation is available in [README.md](README.md).
 
 ## 系統需求
 
-- Node.js 18 或更新版本
+- Node.js 20 或更新版本
 - npm
 - 可連線的 Redis Server 或 Redis Cluster
 
@@ -189,8 +189,11 @@ REDIS_MODEL = "readwrite"
 
 ### 讀取與檢視工具
 
+如果你不確定某個工具該怎麼用，或 Redis 指令執行失敗，請先呼叫 `redis_manual`。它會回傳內建手冊，包含安全使用規則、key-type 指引，以及 command 組合方式。
+
 | 工具 | 說明 |
 | --- | --- |
+| `redis_manual` | 回傳內建手冊。當你不確定如何使用 Redis 工具，或需要排查操作錯誤時，請先查這個工具 |
 | `redis_ping` | Ping Redis，並可選擇回傳指定訊息 |
 | `redis_info` | 取得伺服器資訊，可指定單一 section |
 | `redis_dbsize` | 取得目前 database 的 key 數量 |

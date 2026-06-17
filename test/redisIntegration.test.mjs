@@ -91,7 +91,9 @@ test('server and metadata tools work', async () => {
   assert.equal(typeof clients.result, 'string');
 
   const config = await redisConfigGet('databases');
-  assert.equal(Array.isArray(config.result), true);
+  assert.equal(typeof config.result, 'object');
+  assert.ok(config.result !== null);
+  assert.ok('databases' in config.result);
 
   const commands = await redisCommandList();
   assert.equal(Array.isArray(commands.result), true);
@@ -169,7 +171,11 @@ test('hash tools work', async () => {
   assert.equal(hget.result, 'codex');
 
   const hgetall = await redisHGetAll(hashKey);
-  assert.deepEqual(hgetall.result, ['name', 'codex', 'score', '42', 'active', 'true']);
+  assert.deepEqual(hgetall.result, {
+    name: 'codex',
+    score: '42',
+    active: 'true',
+  });
 
   const hdel = await redisHDel(hashKey, ['active']);
   assert.equal(hdel.result, 1);
@@ -226,7 +232,10 @@ test('sorted set tools work', async () => {
   assert.deepEqual(zrange.result, ['a', 'b', 'c']);
 
   const zrangeWithScores = await redisZRange(zsetKey, 0, 1, true);
-  assert.deepEqual(zrangeWithScores.result, ['a', '1', 'b', '2']);
+  assert.deepEqual(zrangeWithScores.result, [
+    ['a', 1],
+    ['b', 2],
+  ]);
 
   const zrem = await redisZRem(zsetKey, ['b']);
   assert.equal(zrem.result, 1);
