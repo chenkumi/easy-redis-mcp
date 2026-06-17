@@ -77,7 +77,7 @@ server.registerTool(
 server.registerTool(
   'redis_command',
   {
-    description: 'Execute a Redis command with arguments. In REDIS_MODEL=read, only read-only commands are allowed.',
+    description: 'Execute a Redis command with arguments. In REDIS_MODE=read, only read-only commands are allowed. REDIS_MODEL is accepted as a backward-compatible alias.',
     inputSchema: z.object({
       command: z.string().min(1).describe('Redis command name, such as GET, SET, HGETALL, or INFO.'),
       args: redisArgsSchema.optional().default([]).describe('Command arguments in order.'),

@@ -55,7 +55,7 @@ npm run build
 | `REDIS_SSL_CERT_REQS` | 否 | `required` | Server certificate 驗證方式：`required` 或 `none` |
 | `REDIS_SSL_CA_CERTS` | 否 | 空 | Trusted CA certificate file 的替代路徑 |
 | `REDIS_CLUSTER_MODE` | 否 | `false` | 設為 `true` 時透過 Redis Cluster root node 連線 |
-| `REDIS_MODEL` | 否 | `readwrite` | 權限模式：`readwrite` 或 `read` |
+| `REDIS_MODE` | 否 | `readwrite` | 權限模式：`readwrite` 或 `read` |
 
 Shell 設定範例：
 
@@ -90,7 +90,7 @@ npx -y easy-redis-mcp
         "REDIS_DB": "0",
         "REDIS_USERNAME": "default",
         "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_MODEL": "readwrite"
+        "REDIS_MODE": "readwrite"
       }
     }
   }
@@ -113,7 +113,7 @@ REDIS_PORT = "6379"
 REDIS_DB = "0"
 REDIS_USERNAME = "default"
 REDIS_PWD = "YOUR PASSWORD"
-REDIS_MODEL = "readwrite"
+REDIS_MODE = "readwrite"
 ```
 
 ## OpenCode opencode.jsonc 設定範例
@@ -132,7 +132,7 @@ REDIS_MODEL = "readwrite"
         "REDIS_DB": "0",
         "REDIS_USERNAME": "default",
         "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_MODEL": "readwrite"
+        "REDIS_MODE": "readwrite"
       }
     }
   }
@@ -214,7 +214,7 @@ REDIS_MODEL = "readwrite"
 
 ### 寫入工具
 
-下列工具僅在 `REDIS_MODEL=readwrite` 時註冊：
+下列工具僅在 `REDIS_MODE=readwrite` 時註冊：
 
 | 工具 | 說明 |
 | --- | --- |
@@ -241,14 +241,14 @@ REDIS_MODEL = "readwrite"
 
 `BLPOP`、`SUBSCRIBE`、`XREAD ... BLOCK` 等 blocking commands 不適合 request/response 型態的 MCP tool，因此會被拒絕。
 
-當 `REDIS_MODEL=read` 時，`redis_command` 僅允許被分類為唯讀的 commands；寫入、管理、blocking 與未知 commands 都會被拒絕。
+當 `REDIS_MODE=read` 時，`redis_command` 僅允許被分類為唯讀的 commands；寫入、管理、blocking 與未知 commands 都會被拒絕。`REDIS_MODEL` 仍可作為相容別名使用。
 
 ## 唯讀模式
 
 當 AI 助理只需要檢視 Redis 時，請設定：
 
 ```env
-REDIS_MODEL=read
+REDIS_MODE=read
 ```
 
 在此模式下，不會註冊 typed write tools，通用指令政策也只允許已知的 read commands。Redis ACL 權限仍是最終的安全邊界，因此建議同時使用專用的唯讀 Redis user。
@@ -256,7 +256,7 @@ REDIS_MODEL=read
 ## 安全注意事項
 
 - 使用專用 Redis ACL user，僅授予助理需要的 commands 與 key patterns。
-- 檢視與報表用途請使用 `REDIS_MODEL=read`。
+- 檢視與報表用途請使用 `REDIS_MODE=read`。`REDIS_MODEL` 仍可作為相容別名使用。
 - 包含 `REDIS_PWD` 的 MCP 設定檔應視為敏感資料。
 - 透過不受信任的網路連線時應啟用 TLS。
 - 正式環境請維持 `REDIS_SSL_CERT_REQS=required`。

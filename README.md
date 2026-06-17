@@ -53,7 +53,7 @@ Configure the server with environment variables in your MCP client configuration
 | `REDIS_SSL_CERT_REQS` | No | `required` | Server certificate verification: `required` or `none` |
 | `REDIS_SSL_CA_CERTS` | No | empty | Alternative path to a trusted CA certificate file |
 | `REDIS_CLUSTER_MODE` | No | `false` | Connect through a Redis Cluster root node when `true` |
-| `REDIS_MODEL` | No | `readwrite` | Permission mode: `readwrite` or `read` |
+| `REDIS_MODE` | No | `readwrite` | Permission mode: `readwrite` or `read` |
 
 Example shell configuration:
 
@@ -88,7 +88,7 @@ If you are unsure how a tool should be used, or a Redis command fails, call `red
         "REDIS_DB": "0",
         "REDIS_USERNAME": "default",
         "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_MODEL": "readwrite"
+        "REDIS_MODE": "readwrite"
       }
     }
   }
@@ -111,7 +111,7 @@ REDIS_PORT = "6379"
 REDIS_DB = "0"
 REDIS_USERNAME = "default"
 REDIS_PWD = "YOUR PASSWORD"
-REDIS_MODEL = "readwrite"
+REDIS_MODE = "readwrite"
 ```
 
 ## OpenCode opencode.jsonc Example
@@ -130,7 +130,7 @@ REDIS_MODEL = "readwrite"
         "REDIS_DB": "0",
         "REDIS_USERNAME": "default",
         "REDIS_PWD": "YOUR PASSWORD",
-        "REDIS_MODEL": "readwrite"
+        "REDIS_MODE": "readwrite"
       }
     }
   }
@@ -170,14 +170,14 @@ REDIS_MODEL = "readwrite"
 
 Prefer `redis_scan` over `redis_keys` for large or production databases because `KEYS` can block Redis while scanning the entire keyspace.
 
-When `REDIS_MODEL=read`, `redis_command` permits only commands classified as read-only. Write, administrative, blocking, and unknown commands are rejected.
+When `REDIS_MODE=read`, `redis_command` permits only commands classified as read-only. Write, administrative, blocking, and unknown commands are rejected. `REDIS_MODEL` remains supported as a backward-compatible alias.
 
 ## Read-Only Mode
 
 Set the following variable when the assistant should only inspect Redis:
 
 ```env
-REDIS_MODEL=read
+REDIS_MODE=read
 ```
 
 In this mode, typed write tools are not registered and the generic command policy allows only recognized read commands. Redis ACL permissions remain the final security boundary, so use a dedicated read-only Redis user whenever possible.
@@ -185,7 +185,7 @@ In this mode, typed write tools are not registered and the generic command polic
 ## Security Notes
 
 - Use a dedicated Redis ACL user with only the commands and key patterns the assistant needs.
-- Use `REDIS_MODEL=read` for inspection and reporting workloads.
+- Use `REDIS_MODE=read` for inspection and reporting workloads. `REDIS_MODEL` is accepted for backward compatibility.
 - Treat MCP configuration files containing `REDIS_PWD` as sensitive.
 - Use TLS when connecting across untrusted networks.
 - Keep `REDIS_SSL_CERT_REQS=required` in production.

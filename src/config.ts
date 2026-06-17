@@ -56,7 +56,7 @@ export const config = {
   sslCertReqs: parseCertReqs(process.env.REDIS_SSL_CERT_REQS),
   sslCaCerts: optionalString(process.env.REDIS_SSL_CA_CERTS),
   clusterMode: parseBoolean(process.env.REDIS_CLUSTER_MODE, false),
-  model: parseModel(process.env.REDIS_MODEL),
+  model: parseModel(process.env.REDIS_MODE ?? process.env.REDIS_MODEL),
 };
 
 export function isReadOnlyMode(): boolean {

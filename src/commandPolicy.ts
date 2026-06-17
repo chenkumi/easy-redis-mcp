@@ -100,12 +100,12 @@ export function assertCommandAllowed(command: string, args: string[] = []): void
   }
 
   if (isReadOnlyMode() && access !== 'read') {
-    throw new Error(`Redis command "${command}" is not allowed when REDIS_MODEL=read. Classified access: ${access}.`);
+    throw new Error(`Redis command "${command}" is not allowed when REDIS_MODE=read. Classified access: ${access}.`);
   }
 }
 
 export function assertWriteAllowed(operation: string): void {
   if (isReadOnlyMode()) {
-    throw new Error(`${operation} is not allowed when REDIS_MODEL=read.`);
+    throw new Error(`${operation} is not allowed when REDIS_MODE=read.`);
   }
 }
